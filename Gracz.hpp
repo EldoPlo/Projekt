@@ -12,23 +12,23 @@ private:
     int iloscKart;
     int sumaPunktow;
     bool spasowal;
-    std::string nazwa;
+    char nazwa[21];
 
 protected:
     void graczPociagnal(Kasyno &kasyno);
     void spasuj();
 
 public:
-    Gracz();
-    Gracz(const char* _nazwa);
+    Gracz(const std::string _nazwa);
     void wezKarte(Karta* _karta);
     void wyswietlKarty();
     int getSumaPunktow();
     bool czySpasowal();
     virtual void dobierzKarte(Kasyno &kasyno);
     void graczSpasowal(Kasyno &kasyno);
-    const std::string& getNazwa();
-   
+    const std::string getNazwa();
+    Karta** pobierzKarty() { return karty; }
+   std::string wyswietlKartydoPliku() const;
     virtual bool isBot() const { return false; }
     ~Gracz();
 };

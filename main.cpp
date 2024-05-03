@@ -5,6 +5,7 @@ int main() {
     
    
     kasyno.graj();
+    kasyno.zapiszStanGryDoPliku("gra.txt");
 
     return 0;
 }

@@ -1,5 +1,7 @@
 #include "Kasyno.hpp"
 #include "Bot.hpp"
+ #include <fstream>
+  #include <iomanip> // Include the necessary header file
 
 Kasyno::Kasyno(int _rozmiarTalii) : rozmiarTalii(_rozmiarTalii), iloscKartWydanych(0), aktualnyGracz(0) {
     srand(time(NULL)); 
@@ -18,6 +20,7 @@ Kasyno::Kasyno() : Kasyno(52) {}
 Karta* Kasyno::dajKarte() {
     if (iloscKartWydanych < rozmiarTalii) {
         iloscKartWydanych++;
+        std::cout << "Karta " << talia[iloscKartWydanych - 1] << "\n";
         return talia[iloscKartWydanych - 1];
     }
     else {
@@ -27,13 +30,35 @@ Karta* Kasyno::dajKarte() {
 
 void Kasyno::inicjalizujKasyno() {
     iloscGraczy = getNumberOfPlayers();
+    iloscBotow = getNumberOfBots();
+    imionaGraczy = new std::string[iloscGraczy + iloscBotow];
+     gracze = new Gracz*[iloscGraczy + iloscBotow];
+
+    for (int i = 0; i < iloscGraczy; i++)
+    {
+        imionaGraczy[i] = getPlayerName(i + 1);
+        gracze[i] = new Gracz(imionaGraczy[i]);
+    }
+    for (int i = iloscGraczy; i < iloscGraczy + iloscBotow; ++i) {
+        int typGracza;
+        do {
+            std::cout << "Wybierz typ gracza komputerowego (1 - ryzykujący, 2 - normalny, 3 - zachowawczy): ";
+            std::cin >> typGracza;
+            // Czyszczenie bufora wejścia
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        } while (typGracza < 1 || typGracza > 3);
+        
+        std::cout << "Dodawanie gracza komputerowego " << i + 1 << "..." << std::endl;
+        gracze[i] = Bot::stworzGraczaKomputerowego(typGracza);
+        std::cout << "Dodano gracza komputerowego " << i + 1 << " (" << dynamic_cast<Bot*>(gracze[i])->nadajIdentyfikator() << std::to_string(i) << ")" << std::endl;
+        imionaGraczy[i] = "Bot" + std::to_string(i + 1);
+        std::cout << "Imię gracza komputerowego " << i + 1 << ": " << imionaGraczy[i] << std::endl;
+    }
+
+   
+
     std::cout << "Ilość graczy: " << iloscGraczy << std::endl;
-    gracze = new Gracz*[iloscGraczy];
-    std:: cout << "Gracze : " << gracze << std::endl;
-    imionaGraczy = new std::string[iloscGraczy];
-    std::cout << "Imiona graczy : " << imionaGraczy << std::endl;
-    dodajBoty();
-    std::cout << "siemano" << std::endl;
+    std::cout << "Ilość botow: " << iloscBotow << std::endl;
 }
 
 void Kasyno::graj() {
@@ -41,13 +66,13 @@ void Kasyno::graj() {
     tasujTalie();
     rozdajPoczatkoweKarty();
     std::cout << "Początkowe karty graczy:" << std::endl;
-    for (int i = 0; i < iloscGraczy; i++) {
+    for (int i = 0; i < iloscGraczy + iloscBotow; i++) {
         std::cout << "Gracz " << i + 1 << " (" << imionaGraczy[i] << "): ";
         gracze[i]->wyswietlKarty(); // Wywołanie metody przez wskaźnik
         std::cout << "  Suma punktów: " << gracze[i]->getSumaPunktow() << std::endl;
     }
 
-    while (aktualnyGracz < iloscGraczy) {
+    while (aktualnyGracz < iloscGraczy + iloscBotow) {
         while (!gracze[aktualnyGracz]->czySpasowal()) { // Wywołanie metody przez wskaźnik
             std::cout << "Gracz " << aktualnyGracz + 1 << " (" << imionaGraczy[aktualnyGracz] << "): ";
             gracze[aktualnyGracz]->wyswietlKarty(); // Wywołanie metody przez wskaźnik
@@ -63,7 +88,7 @@ void Kasyno::graj() {
 
 void Kasyno::decideWhoWon() {
     int* sumaPunktowGraczy = new int[iloscGraczy];
-    for (int i = 0; i < iloscGraczy; ++i) {
+    for (int i = 0; i < iloscGraczy + iloscBotow; ++i) {
         sumaPunktowGraczy[i] = gracze[i]->getSumaPunktow();
     }
 
@@ -73,7 +98,7 @@ void Kasyno::decideWhoWon() {
             std::cout << "Wszyscy gracze przekroczyli 21 punktów. Remis!" << std::endl;
             break;
         case -2:
-            std::cout << "Remis! Wszyscy gracze mają tyle samo punktów poniżej 21." << std::endl;
+            std::cout << "Remis!" << std::endl;
             break;
         default:
             std::cout << "Gracz " << winningPlayer + 1 << " (" << imionaGraczy[winningPlayer] << ") wygrał!" << std::endl;
@@ -90,7 +115,7 @@ int Kasyno::determineWinner(int* sumaPunktowGraczy) {
     bool draw = false;
     bool allBusted = true;
 
-    for (int i = 0; i < iloscGraczy; ++i) {
+    for (int i = 0; i < iloscGraczy + iloscBotow; ++i) {
         if (sumaPunktowGraczy[i] <= 21) {
             allBusted = false;
             if (sumaPunktowGraczy[i] > maxPoints) {
@@ -114,18 +139,17 @@ int Kasyno::determineWinner(int* sumaPunktowGraczy) {
 
 void Kasyno::rozdajPoczatkoweKarty() {
     std::cout << "Rozdawanie początkowych kart..." << std::endl;
-    for (int i = 0; i < iloscGraczy; i++) {
-          std::cout << "Siemanko`" << std::endl;
+    for (int i = 0; i < iloscGraczy + iloscBotow; i++) {
+        
+        
         if (dynamic_cast<Bot*>(gracze[i]) != nullptr) { 
-            std::cout << "Siemanko" << std::endl;
-           imionaGraczy[i] = dynamic_cast<Bot*>(gracze[i])->nadajIdentyfikator();
-           std::cout<< "Imiona Graczy : " << imionaGraczy[i] << std::endl;
-        } else {
-            imionaGraczy[i] = getPlayerName(i + 1);
-              std::cout << "Siemanko2" << std::endl; // W pozostałych przypadkach, pobierz nazwę gracza od użytkownika
+            
+            imionaGraczy[i] = dynamic_cast<Bot*>(gracze[i])->nadajIdentyfikator() + std::to_string(i);
+           
         }
+
         for (int j = 0; j < 2; j++) {
-              std::cout << "Siemanko4" << std::endl;
+              
             gracze[i]->wezKarte(dajKarte()); // Wywołanie metody przez wskaźnik
         }
     }
@@ -156,80 +180,51 @@ int Kasyno::getNumberOfPlayers() {
     return numberOfPlayers;
 }
 
+int Kasyno::getNumberOfBots() {
+    int numberOfBots;
+    do {
+        std::cout << "Podaj liczbę botów (od 0 do 3): ";
+        if (std::cin >> numberOfBots && numberOfBots >= 0 && numberOfBots <= 3) {
+            break; 
+        } else {
+            std::cout << "Niepoprawna liczba graczy. Podaj liczbę od 0 do 3." << std::endl;
+            std::cin.clear(); // Czyścimy błąd flagi cin
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Usuwamy resztę wprowadzonych danych
+        }
+    } while (true);
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Usuwamy zbędne nowe linie z bufora
+    return numberOfBots;
+}
+
 std::string Kasyno::getPlayerName(int playerNumber) {
     std::string playerName;
     do {
         std::cout << "Podaj nazwę gracza " << playerNumber << " (maksymalnie 20 znaków): ";
-        std::cin >> playerName;
-        std::cout << "Player Name : " << playerName << std::endl;
+        std::getline(std::cin, playerName);
         if (!playerName.empty() && playerName.length() <= 20) {
             break; // Poprawne dane, kończymy pętlę
         } else {
             std::cout << "Nazwa gracza nie może być pusta ani przekraczać 20 znaków. Wprowadź nazwę gracza ponownie." << std::endl;
         }
     } while (true);
-    std::cout<< "Player Name : " << playerName << std::endl;
     return playerName;
 }
 
-void Kasyno::dodajBoty() {
-    int iloscBotow;
-    std::cout << "Podaj ilość botów do dodania: ";
-    std::cin >> iloscBotow;
+void Kasyno::zapiszStanGryDoPliku(const std::string& nazwaPliku) {
+    std::ofstream plik(nazwaPliku);
 
-    // Czyszczenie bufora wejścia
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    plik << std::setw(10) << std::left << "Gracz" << "Karty"<< "           Suma" << std::endl;
+    plik << std::setw(30) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
 
-    // Tworzenie nowej tablicy imion graczy
-    std::string* noweImionaGraczy = new std::string[iloscGraczy + iloscBotow];
+    for (int i = 0; i < iloscGraczy + iloscBotow; ++i) {
+        Gracz* gracz = gracze[i];
+        std::string imie = imionaGraczy[i];
 
-    for (int i = 0; i < iloscGraczy; ++i) {
-        noweImionaGraczy[i] = imionaGraczy[i]; // Kopiowanie istniejących imion
+        plik << std::setw(10) << std::left << imie;
+        plik << gracz->wyswietlKartydoPliku() << "  " << gracz->getSumaPunktow() << std::endl; 
     }
 
-    // Usuwanie starej tablicy imion graczy
-    delete[] imionaGraczy;
-
-    // Przypisanie nowej tablicy imion graczy
-    imionaGraczy = noweImionaGraczy;
-
-    for (int i = iloscGraczy; i < iloscGraczy + iloscBotow; ++i) {
-        int typGracza;
-        do {
-            std::cout << "Wybierz typ gracza komputerowego (1 - ryzykujący, 2 - normalny, 3 - zachowawczy): ";
-            std::cin >> typGracza;
-            // Czyszczenie bufora wejścia
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        } while (typGracza < 1 || typGracza > 3);
-        
-        std::cout << "Dodawanie gracza komputerowego " << i + 1 << "..." << std::endl;
-        gracze[i] = stworzGraczaKomputerowego(typGracza);
-        std::cout << "Dodano gracza komputerowego " << i + 1 << " (" << dynamic_cast<Bot*>(gracze[i])->nadajIdentyfikator() << ")" << std::endl;
-        imionaGraczy[i] = "Bot" + std::to_string(i + 1);
-        std::cout << "Imię gracza komputerowego " << i + 1 << ": " << imionaGraczy[i] << std::endl;
-    }
-
-    iloscGraczy += iloscBotow;
-    std::cout << "Ilosc Graczy : "  << iloscGraczy<<std::endl; // Aktualizacja liczby graczy w kasynie
-}
-
-Gracz* Kasyno::stworzGraczaKomputerowego(int typGracza) {
-    int limitPunktow;
-    switch (typGracza) {
-        case 1: // Gracz ryzykujący
-            limitPunktow = 20;
-            break;
-        case 2: // Gracz normalny
-            limitPunktow = 17;
-            break;
-        case 3: // Gracz zachowawczy
-            limitPunktow = 14;
-            break;
-        default:
-            limitPunktow = 17; // Domyślny limit punktów dla gracza normalnego
-            break;
-    }
-    return new Bot(limitPunktow); 
+    plik.close();
 }
 
 Kasyno::~Kasyno() {

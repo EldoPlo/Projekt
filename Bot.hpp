@@ -9,12 +9,12 @@ private:
     int odwaga;
 
 public:
-    Bot(int _odwaga);
+    Bot(int _odwaga, const std::string _nazwa);
 
     void dobierzKarte(Kasyno& kasyno) override;
 
     std::string nadajIdentyfikator();
-    static Bot stworzGraczaKomputerowego(int typGracza);
+    static Bot* stworzGraczaKomputerowego(int typGracza);
 };
 
 #endif // BOT_HPP

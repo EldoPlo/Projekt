@@ -5,12 +5,19 @@
 #include <map>
 #include <functional> 
 #include <limits>
-#include <cstring> // Dla funkcji strlen
+#include <cstring> 
+#include <sstream>// Dla funkcji strlen
 
-Gracz::Gracz() : iloscKart(0), sumaPunktow(0), spasowal(false) {}
+
+std::string nazwaKoloru(int numerKoloru);
+Gracz::Gracz(const std::string _nazwa) : iloscKart(0), sumaPunktow(0), spasowal(false)
+{
+    strncpy(nazwa, _nazwa.c_str(), 21);
+}
 
 void Gracz::wezKarte(Karta* karta)
 {
+    std::cout << "Gracz " << nazwa << " dobiera kartę: " << karta->getFigura() << " " << karta->getKolor() << " " << karta->getWartosc() << std::endl;
     if (iloscKart < 10)
     {
         karty[iloscKart] = karta;
@@ -79,6 +86,26 @@ void Gracz::graczPociagnal(Kasyno &Kasyno)
     }
 }
 
+std::string Gracz::wyswietlKartydoPliku() const {
+    std::stringstream ss;
+    for (int i = 0; i < iloscKart; ++i) {
+        if (karty[i] != nullptr) {
+            ss << karty[i]->getFigura() << " " << nazwaKoloru(karty[i]->getKolor()) << " ";
+        }
+    }
+    return ss.str();
+}
+
+std::string nazwaKoloru(int numerKoloru) {
+    switch (numerKoloru) {
+        case 3: return "Trefl";
+        case 4: return "Karo";
+        case 5: return "Kier";
+        case 6: return "Wino";
+        default: return "Nieznany kolor";
+    }
+}
+
 int Gracz::getSumaPunktow()
 {
     return sumaPunktow;
@@ -94,7 +121,7 @@ void Gracz::spasuj()
     spasowal = true;
 }
 
-const std::string& Gracz::getNazwa()
+const std::string Gracz::getNazwa()
 {
     return nazwa;
 }

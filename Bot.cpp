@@ -1,28 +1,30 @@
 #include "Bot.hpp"
 
 // Implementacja konstruktora klasy Bot
-Bot::Bot(int _odwaga) : odwaga(_odwaga) {}
+Bot::Bot(int _odwaga, const std::string _nazwa) : Gracz(_nazwa), odwaga(_odwaga) {};
 
 // Implementacja metody dobierzKarte dla gracza komputerowego
 void Bot::dobierzKarte(Kasyno& kasyno) {
+    std::cout << "Gracz komputerowy dobiera kartę." << std::endl;
     while (getSumaPunktow() < odwaga && !czySpasowal()) {
+        std::cout << odwaga << std::endl;
         Karta* karta = kasyno.dajKarte();
         if (karta == nullptr) {
             spasuj();
-            break;
         }
         wezKarte(karta);
         std::cout << "Gracz komputerowy dobrał kartę." << std::endl;
     }
+    spasuj();
 }
 
-// Implementacja metody nadającej identyfikator gracza wirtualnego
+
 std::string Bot::nadajIdentyfikator() {
-    return "Bot" + std::to_string(1); // Zakładam, że numer gracza wirtualnego to zawsze 1
+    return "Bot"; 
 }
 
-// Implementacja funkcji fabrykującej gracza komputerowego zgodnie z typem
- Bot Bot::stworzGraczaKomputerowego(int typGracza) {
+
+Bot* Bot::stworzGraczaKomputerowego(int typGracza) {
     int limitPunktow;
     switch (typGracza) {
         case 1: // Gracz ryzykujący
@@ -38,5 +40,5 @@ std::string Bot::nadajIdentyfikator() {
             limitPunktow = 16; // Domyślny limit punktów dla gracza normalnego
             break;
     }
-    return  Bot(limitPunktow); 
+    return new Bot(limitPunktow, "Bot" + std::to_string(typGracza)); 
 }

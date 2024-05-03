@@ -15,15 +15,18 @@ private:
     int iloscKartWydanych;
     Karta* talia[52];
     int iloscGraczy;
+    int iloscBotow;
     Gracz** gracze;
     std::string* imionaGraczy;
     int aktualnyGracz;
+    int getNumberOfBots();
+    
 
 public:
     Kasyno(int _rozmiarTalii);
     Kasyno();
     ~Kasyno();
-
+    void zapiszStanGryDoPliku(const std::string& nazwaPliku);
     void inicjalizujKasyno();
     void graj();
     void decideWhoWon();
