@@ -1,6 +1,5 @@
 Gracz     Karty           Suma
 ------------------------------
-rafa      7 Wino J Trefl 3 Trefl 2 Karo 4 Trefl 5 Kier   23
-sad       9 Kier 5 Karo   14
-Bot2      D Trefl K Trefl 9 Wino   23
-Bot3      D Wino 3 Wino J Wino J Karo   17
+rfa       8 Wino A Trefl   19
+Bot1      8 Kier 2 Kier K Kier J Kier A Karo   27
+Bot2      3 Karo 4 Trefl J Trefl 5 Trefl J Karo 3 Wino   19

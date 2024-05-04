@@ -6,7 +6,7 @@
 #include <functional> 
 #include <limits>
 #include <cstring> 
-#include <sstream>// Dla funkcji strlen
+#include <sstream>
 
 
 std::string nazwaKoloru(int numerKoloru);
@@ -29,7 +29,7 @@ void Gracz::wezKarte(Karta* karta)
 
 void Gracz::wyswietlKarty()
 {
-    std::cout << "Gracz " << nazwa << ": " << std::endl; // Wyświetlenie nazwy gracza
+    std::cout << "Gracz " << nazwa << ": " << std::endl; 
     for (int i = 0; i < iloscKart; i++)
     {
         Karta* karta = karty[i];

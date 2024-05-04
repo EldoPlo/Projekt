@@ -1,7 +1,7 @@
 #include "Kasyno.hpp"
 #include "Bot.hpp"
  #include <fstream>
-  #include <iomanip> // Include the necessary header file
+  #include <iomanip> 
 
 Kasyno::Kasyno(int _rozmiarTalii) : rozmiarTalii(_rozmiarTalii), iloscKartWydanych(0), aktualnyGracz(0) {
     srand(time(NULL)); 
@@ -12,7 +12,7 @@ Kasyno::Kasyno(int _rozmiarTalii) : rozmiarTalii(_rozmiarTalii), iloscKartWydany
             i++;
         }
     }
-    imionaGraczy = new std::string[iloscGraczy]; // Inicjalizacja tablicy imionaGraczy
+    imionaGraczy = new std::string[iloscGraczy]; 
 }
 
 Kasyno::Kasyno() : Kasyno(52) {}
@@ -20,7 +20,7 @@ Kasyno::Kasyno() : Kasyno(52) {}
 Karta* Kasyno::dajKarte() {
     if (iloscKartWydanych < rozmiarTalii) {
         iloscKartWydanych++;
-        std::cout << "Karta " << talia[iloscKartWydanych - 1] << "\n";
+       
         return talia[iloscKartWydanych - 1];
     }
     else {
@@ -44,7 +44,7 @@ void Kasyno::inicjalizujKasyno() {
         do {
             std::cout << "Wybierz typ gracza komputerowego (1 - ryzykujący, 2 - normalny, 3 - zachowawczy): ";
             std::cin >> typGracza;
-            // Czyszczenie bufora wejścia
+           
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } while (typGracza < 1 || typGracza > 3);
         
@@ -66,18 +66,22 @@ void Kasyno::graj() {
     tasujTalie();
     rozdajPoczatkoweKarty();
     std::cout << "Początkowe karty graczy:" << std::endl;
+    std::cout << "-----------------------------------" << std::endl;
     for (int i = 0; i < iloscGraczy + iloscBotow; i++) {
         std::cout << "Gracz " << i + 1 << " (" << imionaGraczy[i] << "): ";
-        gracze[i]->wyswietlKarty(); // Wywołanie metody przez wskaźnik
+        std::cout << "-----------------------------------" << std::endl;
+        gracze[i]->wyswietlKarty(); 
         std::cout << "  Suma punktów: " << gracze[i]->getSumaPunktow() << std::endl;
+        std::cout << "-----------------------------------" << std::endl;
     }
 
     while (aktualnyGracz < iloscGraczy + iloscBotow) {
-        while (!gracze[aktualnyGracz]->czySpasowal()) { // Wywołanie metody przez wskaźnik
+        while (!gracze[aktualnyGracz]->czySpasowal()) { 
             std::cout << "Gracz " << aktualnyGracz + 1 << " (" << imionaGraczy[aktualnyGracz] << "): ";
-            gracze[aktualnyGracz]->wyswietlKarty(); // Wywołanie metody przez wskaźnik
+            std::cout << "-----------------------------------" << std::endl;
+            gracze[aktualnyGracz]->wyswietlKarty(); 
             std::cout << "  Suma punktów: " << gracze[aktualnyGracz]->getSumaPunktow() << std::endl;
-            std::cout << "//////////////////////////////////////" << std::endl;
+            std::cout << "-----------------------------------" << std::endl;
             gracze[aktualnyGracz]->dobierzKarte(*this); 
         }
         aktualnyGracz++;
@@ -129,16 +133,17 @@ int Kasyno::determineWinner(int* sumaPunktowGraczy) {
     }
 
     if (allBusted) {
-        return -1; // Wszyscy przekroczyli 21
+        return -1; 
     } else if (draw) {
-        return -2; // Remis
+        return -2; 
     } else {
-        return winningPlayer; // Zwraca indeks zwycięzcy
+        return winningPlayer; 
     }
 }
 
 void Kasyno::rozdajPoczatkoweKarty() {
     std::cout << "Rozdawanie początkowych kart..." << std::endl;
+    std::cout << "-----------------------------------" << std::endl;
     for (int i = 0; i < iloscGraczy + iloscBotow; i++) {
         
         
@@ -150,7 +155,7 @@ void Kasyno::rozdajPoczatkoweKarty() {
 
         for (int j = 0; j < 2; j++) {
               
-            gracze[i]->wezKarte(dajKarte()); // Wywołanie metody przez wskaźnik
+            gracze[i]->wezKarte(dajKarte()); 
         }
     }
 }
@@ -172,11 +177,11 @@ int Kasyno::getNumberOfPlayers() {
             break; 
         } else {
             std::cout << "Niepoprawna liczba graczy. Podaj liczbę od 1 do 3." << std::endl;
-            std::cin.clear(); // Czyścimy błąd flagi cin
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Usuwamy resztę wprowadzonych danych
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
         }
     } while (true);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Usuwamy zbędne nowe linie z bufora
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
     return numberOfPlayers;
 }
 
@@ -188,11 +193,11 @@ int Kasyno::getNumberOfBots() {
             break; 
         } else {
             std::cout << "Niepoprawna liczba graczy. Podaj liczbę od 0 do 3." << std::endl;
-            std::cin.clear(); // Czyścimy błąd flagi cin
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Usuwamy resztę wprowadzonych danych
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
         }
     } while (true);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Usuwamy zbędne nowe linie z bufora
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
     return numberOfBots;
 }
 
@@ -202,7 +207,7 @@ std::string Kasyno::getPlayerName(int playerNumber) {
         std::cout << "Podaj nazwę gracza " << playerNumber << " (maksymalnie 20 znaków): ";
         std::getline(std::cin, playerName);
         if (!playerName.empty() && playerName.length() <= 20) {
-            break; // Poprawne dane, kończymy pętlę
+            break; 
         } else {
             std::cout << "Nazwa gracza nie może być pusta ani przekraczać 20 znaków. Wprowadź nazwę gracza ponownie." << std::endl;
         }
